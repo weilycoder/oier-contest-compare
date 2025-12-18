@@ -135,13 +135,30 @@ if __name__ == "__main__":
     try:
         data = Data()
     except FileNotFoundError:
-        print("请先初始化子模块：")
-        print("  git submodule update --init --recursive")
-        print("若已经初始化子模块，运行 OIerDb-data-generator 生成数据：")
-        print("  cd OIerDb-data-generator")
-        print("  python main.py")
-        print("可能需要安装依赖，请参阅子项目的 README.md 文件。")
-        print("完成后回到本项目根目录重新运行此脚本。")
+        import os
+        import sys
+
+        print("无法找到 OIerDb-data-generator 子模块生成的数据文件。", file=sys.stderr)
+        print(f"当前工作目录：{os.getcwd()}", file=sys.stderr)
+
+        print("尝试初始化子模块：", file=sys.stderr)
+        if input("将执行 `git submodule update --init --recursive`，按回车继续，输入 N 跳过... ").upper() != "N":
+            os.system("git submodule update --init --recursive")
+        else:
+            print("跳过子模块初始化。", file=sys.stderr)
+
+        print("尝试进入子模块并生成数据：", file=sys.stderr)
+        if input("将进入 OIerDb-data-generator 并执行 `python main.py`，按回车继续，输入 N 跳过... ").upper() != "N":
+            try:
+                os.chdir("OIerDb-data-generator")
+                os.system("python main.py")
+                os.chdir("..")
+            except FileNotFoundError:
+                print("无法找到 OIerDb-data-generator 子模块，请检查子模块是否正确初始化。", file=sys.stderr)
+        else:
+            print("跳过数据生成。", file=sys.stderr)
+
+        print("请确认数据文件已生成，然后重新运行本程序。")
         exit(1)
     else:
         data.compare_contests("CSP2025提高", "NOIP2025")
