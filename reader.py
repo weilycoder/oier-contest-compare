@@ -132,11 +132,19 @@ class Data:
 
 
 def main() -> None:
+    import sys
+    if len(sys.argv) != 3:
+        print(f"用法：reader.py <比赛A名称> <比赛B名称>")
+        print("示例：")
+        print(f"  reader.py CSP2025提高 NOIP2025")
+        exit(1)
+
+    contest_a, contest_b = sys.argv[1], sys.argv[2]
+    
     try:
         data = Data()
     except FileNotFoundError:
         import os
-        import sys
 
         def run_command(command: str) -> None:
             print(f"正在执行命令：{command}", file=sys.stderr)
@@ -175,7 +183,7 @@ def main() -> None:
         print("请确认数据文件已生成，然后重新运行本程序。")
         exit(1)
     else:
-        data.compare_contests("CSP2025提高", "NOIP2025")
+        data.compare_contests(contest_a, contest_b)
 
 
 if __name__ == "__main__":
