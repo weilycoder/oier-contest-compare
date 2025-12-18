@@ -131,27 +131,41 @@ class Data:
         plt.show()
 
 
-if __name__ == "__main__":
+def main() -> None:
     try:
         data = Data()
     except FileNotFoundError:
         import os
         import sys
 
+        def run_command(command: str) -> None:
+            print(f"正在执行命令：{command}", file=sys.stderr)
+            if os.system(command) != 0:
+                print(f"命令执行失败：{command}", file=sys.stderr)
+                print("请手动检查并解决上述错误后重新运行本程序。", file=sys.stderr)
+                exit(1)
+            else:
+                print(f"命令执行成功：{command}", file=sys.stderr)
+
         print("无法找到 OIerDb-data-generator 子模块生成的数据文件。", file=sys.stderr)
         print(f"当前工作目录：{os.getcwd()}", file=sys.stderr)
 
         print("尝试初始化子模块：", file=sys.stderr)
         if input("将执行 `git submodule update --init --recursive`，按回车继续，输入 N 跳过... ").upper() != "N":
-            os.system("git submodule update --init --recursive")
+            run_command("git submodule update --init --recursive")
         else:
             print("跳过子模块初始化。", file=sys.stderr)
 
         print("尝试进入子模块并生成数据：", file=sys.stderr)
+        if input("将安装 Python 依赖，按回车继续，输入 N 跳过... ").upper() != "N":
+            run_command("python -m pip install pypinyin requests tqdm")
+        else:
+            print("跳过依赖安装。", file=sys.stderr)
+
         if input("将进入 OIerDb-data-generator 并执行 `python main.py`，按回车继续，输入 N 跳过... ").upper() != "N":
             try:
                 os.chdir("OIerDb-data-generator")
-                os.system("python main.py")
+                run_command("python main.py")
                 os.chdir("..")
             except FileNotFoundError:
                 print("无法找到 OIerDb-data-generator 子模块，请检查子模块是否正确初始化。", file=sys.stderr)
@@ -162,3 +176,10 @@ if __name__ == "__main__":
         exit(1)
     else:
         data.compare_contests("CSP2025提高", "NOIP2025")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (KeyboardInterrupt, EOFError):
+        print("\n用户中断，程序终止。")
