@@ -1,0 +1,3 @@
+[submodule "OIerDb-data-generator"]
+	path = OIerDb-data-generator
+	url = https://github.com/weilycoder/OIerDb-data-generator.git
