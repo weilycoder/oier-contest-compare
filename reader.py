@@ -54,6 +54,46 @@ class Data:
     def get_oiers_by_contest(self, contest_name: str) -> set[int]:
         return {i for i, oier in enumerate(self.oier_table) if oier.participated(contest_name)}
 
+    @staticmethod
+    def discrete_compact_rank(data: list[Any]) -> list[int]:
+        unique_data = sorted(set(data))
+        data_map = {value: index for index, value in enumerate(unique_data, 1)}
+        return [data_map[value] for value in data]
+
+    @staticmethod
+    def discrete_average_rank(data: list[Any]) -> list[float]:
+        unique_data = sorted(set(data))
+
+        occurrence_count = {value: 0 for value in unique_data}
+        for value in data:
+            occurrence_count[value] += 1
+
+        data_map = {}
+        cumulative_rank = 0
+        for value in unique_data:
+            count = occurrence_count[value]
+            average_rank = (cumulative_rank + 1 + cumulative_rank + count) / 2
+            data_map[value] = average_rank
+            cumulative_rank += count
+
+        return [data_map[value] for value in data]
+
+    @staticmethod
+    def calc_pearson(x: list[float], y: list[float]) -> float:
+        ax = sum(x) / len(x)
+        ay = sum(y) / len(y)
+        xx = [xi - ax for xi in x]
+        yy = [yi - ay for yi in y]
+        sx = math.sqrt(sum(xi * xi for xi in xx))
+        sy = math.sqrt(sum(yi * yi for yi in yy))
+        return sum(xx[i] * yy[i] for i in range(len(x))) / (sx * sy)
+
+    @staticmethod
+    def calc_spearman(x: list[float], y: list[float]) -> float:
+        rx = Data.discrete_average_rank(x)
+        ry = Data.discrete_average_rank(y)
+        return Data.calc_pearson(rx, ry)
+
     def compare_contests(self, contest_a: str, contest_b: str) -> None:
         contest_a_oiers = self.get_oiers_by_contest(contest_a)
         contest_b_oiers = self.get_oiers_by_contest(contest_b)
@@ -83,6 +123,11 @@ class Data:
         plt.xlabel(contest_a)
         plt.ylabel(contest_b)
 
+        pearson_corr = self.calc_pearson(contest_a_scores, contest_b_scores)
+        spearman_corr = self.calc_spearman(contest_a_scores, contest_b_scores)
+
+        plt.figtext(0.14, 0.86, f"Pearson   相关系数: {pearson_corr:.4f}", fontsize=12)
+        plt.figtext(0.14, 0.84, f"Spearman  相关系数: {spearman_corr:.4f}", fontsize=12)
         plt.show()
 
 
