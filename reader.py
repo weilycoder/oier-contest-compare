@@ -87,5 +87,16 @@ class Data:
 
 
 if __name__ == "__main__":
-    data = Data()
-    data.compare_contests("CSP2025提高", "NOIP2025")
+    try:
+        data = Data()
+    except FileNotFoundError:
+        print("请先初始化子模块：")
+        print("  git submodule update --init --recursive")
+        print("若已经初始化子模块，运行 OIerDb-data-generator 生成数据：")
+        print("  cd OIerDb-data-generator")
+        print("  python main.py")
+        print("可能需要安装依赖，请参阅子项目的 README.md 文件。")
+        print("完成后回到本项目根目录重新运行此脚本。")
+        exit(1)
+    else:
+        data.compare_contests("CSP2025提高", "NOIP2025")
