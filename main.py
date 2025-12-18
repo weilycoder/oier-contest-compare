@@ -134,9 +134,9 @@ class Data:
 def main() -> None:
     import sys
     if len(sys.argv) != 3:
-        print(f"用法：reader.py <比赛A名称> <比赛B名称>")
+        print(f"main.py <比赛A名称> <比赛B名称>")
         print("示例：")
-        print(f"  reader.py CSP2025提高 NOIP2025")
+        print(f"  main.py CSP2025提高 NOIP2025")
         exit(1)
 
     contest_a, contest_b = sys.argv[1], sys.argv[2]
