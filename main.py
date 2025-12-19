@@ -121,7 +121,7 @@ class Data:
             contest_b_scores.append(score_b)
 
         plt.figure(figsize=(10, 10), dpi=80)
-        plt.title(f"{contest_a} 与 {contest_b} 成绩对比散点图")
+        plt.title(f"{contest_a} vs {contest_b} Score Comparison Scatter Plot", fontsize=12)
         plt.scatter(contest_a_scores, contest_b_scores, s=10, c="blue", alpha=0.5)
         plt.xlabel(contest_a)
         plt.ylabel(contest_b)
@@ -129,8 +129,8 @@ class Data:
         pearson_corr = self.calc_pearson(contest_a_scores, contest_b_scores)
         spearman_corr = self.calc_spearman(contest_a_scores, contest_b_scores)
 
-        plt.figtext(0.14, 0.86, f"Pearson   相关系数: {pearson_corr:.4f}", fontsize=12)
-        plt.figtext(0.14, 0.84, f"Spearman  相关系数: {spearman_corr:.4f}", fontsize=12)
+        plt.figtext(0.14, 0.86, f"Pearson  corr: {pearson_corr:.4f}", fontsize=12)
+        plt.figtext(0.14, 0.84, f"Spearman corr: {spearman_corr:.4f}", fontsize=12)
 
         if save_to_png:
             if isinstance(save_to_png, str):
@@ -173,5 +173,5 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-    except (KeyboardInterrupt, EOFError):
-        print("\n用户中断，程序终止。")
+    except KeyboardInterrupt:
+        print("\nProgram terminated by user.")
