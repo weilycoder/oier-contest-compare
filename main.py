@@ -4,7 +4,7 @@ import math
 
 from typing import cast, Any, Literal
 
-import numpy as np
+# import numpy as np
 import matplotlib.pyplot as plt
 
 
