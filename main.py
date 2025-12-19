@@ -101,7 +101,7 @@ class Data:
         *,
         dpi: int = 80,
         alpha: float = 0.5,
-        save_to_png: str | bool = False,
+        export_image: str | bool = False,
         show_plot: bool = True,
     ) -> None:
         contest_a_oiers = self.get_oiers_by_contest(contest_a)
@@ -134,9 +134,9 @@ class Data:
         plt.figtext(0.14, 0.86, f"Pearson  corr: {pearson_corr:.4f}", fontsize=12)
         plt.figtext(0.14, 0.84, f"Spearman corr: {spearman_corr:.4f}", fontsize=12)
 
-        if save_to_png:
-            if isinstance(save_to_png, str):
-                filename = str(save_to_png)
+        if export_image:
+            if isinstance(export_image, str):
+                filename = str(export_image)
             else:
                 filename = f"{contest_a}_vs_{contest_b}.png"
             plt.savefig(filename, dpi=dpi)
@@ -161,7 +161,7 @@ def main() -> None:
     parser.add_argument("contest_b", type=str, help="Name of contest B")
     parser.add_argument("--dpi", type=int, default=80, help="DPI for the plot")
     parser.add_argument("--alpha", type=validate_alpha, default=0.5, help="Alpha transparency for scatter points")
-    parser.add_argument("--save", type=str, default=None, help="Save the plot to a PNG file")
+    parser.add_argument("--save", type=str, default=None, help="Path to save the plot image")
     parser.add_argument("--no-show", action="store_true", help="Do not display the plot")
 
     args = parser.parse_args()
@@ -180,7 +180,7 @@ def main() -> None:
             args.contest_b,
             dpi=args.dpi,
             alpha=args.alpha,
-            save_to_png=args.save if args.save else False,
+            export_image=args.save if args.save else False,
             show_plot=not args.no_show,
         )
 
