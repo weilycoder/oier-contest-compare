@@ -99,10 +99,6 @@ class Data:
         contest_b_oiers = self.get_oiers_by_contest(contest_b)
         target_oiers = contest_a_oiers & contest_b_oiers
 
-        if len(target_oiers) == 0:
-            print(f"{contest_a} 与 {contest_b} 无重合选手")
-            return
-
         # contest_a_ranks = []
         # contest_b_ranks = []
         contest_a_scores = []
