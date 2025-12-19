@@ -99,6 +99,8 @@ class Data:
         contest_a: str,
         contest_b: str,
         *,
+        dpi: int = 80,
+        alpha: float = 0.5,
         save_to_png: str | bool = False,
         show_plot: bool = True,
     ) -> None:
@@ -120,9 +122,9 @@ class Data:
             contest_a_scores.append(score_a)
             contest_b_scores.append(score_b)
 
-        plt.figure(figsize=(10, 10), dpi=80)
+        plt.figure(figsize=(10, 10), dpi=dpi)
         plt.title(f"{contest_a} vs {contest_b} Score Comparison Scatter Plot", fontsize=12)
-        plt.scatter(contest_a_scores, contest_b_scores, s=10, c="blue", alpha=0.5)
+        plt.scatter(contest_a_scores, contest_b_scores, s=10, c="blue", alpha=alpha)
         plt.xlabel(contest_a)
         plt.ylabel(contest_b)
 
@@ -137,7 +139,7 @@ class Data:
                 filename = str(save_to_png)
             else:
                 filename = f"{contest_a}_vs_{contest_b}.png"
-            plt.savefig(filename)
+            plt.savefig(filename, dpi=dpi)
         if show_plot:
             plt.show()
 
@@ -145,9 +147,20 @@ class Data:
 def main() -> None:
     import argparse
 
+    def validate_alpha(value: str) -> float:
+        try:
+            alpha = float(value)
+        except ValueError:
+            raise argparse.ArgumentTypeError("alpha is not a valid float")
+        if not (0.0 <= alpha <= 1.0):
+            raise argparse.ArgumentTypeError(f"alpha ({alpha}) is out of 0-1 range")
+        return alpha
+
     parser = argparse.ArgumentParser(description="Compare contest results of OIers.")
     parser.add_argument("contest_a", type=str, help="Name of contest A")
     parser.add_argument("contest_b", type=str, help="Name of contest B")
+    parser.add_argument("--dpi", type=int, default=80, help="DPI for the plot")
+    parser.add_argument("--alpha", type=validate_alpha, default=0.5, help="Alpha transparency for scatter points")
     parser.add_argument("--save", type=str, default=None, help="Save the plot to a PNG file")
     parser.add_argument("--no-show", action="store_true", help="Do not display the plot")
 
@@ -165,6 +178,8 @@ def main() -> None:
         data.compare_contests(
             args.contest_a,
             args.contest_b,
+            dpi=args.dpi,
+            alpha=args.alpha,
             save_to_png=args.save if args.save else False,
             show_plot=not args.no_show,
         )
