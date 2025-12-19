@@ -4,7 +4,7 @@ import math
 
 from typing import cast, Any, Literal
 
-# import numpy as np
+import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -101,6 +101,7 @@ class Data:
         *,
         dpi: int = 80,
         alpha: float = 0.5,
+        polyfit_degree: int | None = None,
         export_image: str | bool = False,
         show_plot: bool = True,
     ) -> None:
@@ -125,6 +126,12 @@ class Data:
         plt.figure(figsize=(10, 10), dpi=dpi)
         plt.title(f"{contest_a} vs {contest_b} Score Comparison Scatter Plot", fontsize=12)
         plt.scatter(contest_a_scores, contest_b_scores, s=10, c="blue", alpha=alpha)
+
+        if polyfit_degree is not None:
+            p = np.poly1d(np.polyfit(contest_a_scores, contest_b_scores, polyfit_degree))
+            x = np.arange(min(contest_a_scores), max(contest_a_scores), 1)
+            plt.plot(x, p(x), color="red")
+
         plt.xlabel(contest_a)
         plt.ylabel(contest_b)
 
@@ -155,12 +162,22 @@ def main() -> None:
         if not (0.0 <= alpha <= 1.0):
             raise argparse.ArgumentTypeError(f"alpha ({alpha}) is out of 0-1 range")
         return alpha
+    
+    def validate_polyfit(value: str) -> int:
+        try:
+            degree = int(value)
+        except ValueError:
+            raise argparse.ArgumentTypeError("polyfit degree is not a valid integer")
+        if degree < 0:
+            raise argparse.ArgumentTypeError(f"polyfit degree ({degree}) must be at least 0")
+        return degree
 
     parser = argparse.ArgumentParser(description="Compare contest results of OIers.")
     parser.add_argument("contest_a", type=str, help="Name of contest A")
     parser.add_argument("contest_b", type=str, help="Name of contest B")
     parser.add_argument("--dpi", type=int, default=80, help="DPI for the plot")
     parser.add_argument("--alpha", type=validate_alpha, default=0.5, help="Alpha transparency for scatter points")
+    parser.add_argument("--polyfit", type=int, default=None, help="Degree of polynomial fit line to draw")
     parser.add_argument("--save", type=str, default=None, help="Path to save the plot image")
     parser.add_argument("--no-show", action="store_true", help="Do not display the plot")
 
@@ -180,6 +197,7 @@ def main() -> None:
             args.contest_b,
             dpi=args.dpi,
             alpha=args.alpha,
+            polyfit_degree=args.polyfit,
             export_image=args.save if args.save else False,
             show_plot=not args.no_show,
         )
