@@ -143,58 +143,31 @@ class Data:
 
 
 def main() -> None:
-    import sys
-    if len(sys.argv) != 3:
-        print(f"main.py <比赛A名称> <比赛B名称>")
-        print("示例：")
-        print(f"  main.py CSP2025提高 NOIP2025")
-        exit(1)
+    import argparse
 
-    contest_a, contest_b = sys.argv[1], sys.argv[2]
-    
+    parser = argparse.ArgumentParser(description="Compare contest results of OIers.")
+    parser.add_argument("contest_a", type=str, help="Name of contest A")
+    parser.add_argument("contest_b", type=str, help="Name of contest B")
+    parser.add_argument("--save", type=str, default=None, help="Save the plot to a PNG file")
+    parser.add_argument("--no-show", action="store_true", help="Do not display the plot")
+
+    args = parser.parse_args()
+
     try:
         data = Data()
     except FileNotFoundError:
-        # import os
-
-        # def run_command(command: str) -> None:
-        #     print(f"正在执行命令：{command}", file=sys.stderr)
-        #     if os.system(command) != 0:
-        #         print(f"命令执行失败：{command}", file=sys.stderr)
-        #         print("请手动检查并解决上述错误后重新运行本程序。", file=sys.stderr)
-        #         exit(1)
-        #     else:
-        #         print(f"命令执行成功：{command}", file=sys.stderr)
-
-        # print("无法找到 OIerDb-data-generator 子模块生成的数据文件。", file=sys.stderr)
-        # print(f"当前工作目录：{os.getcwd()}", file=sys.stderr)
-
-        # print("尝试初始化子模块：", file=sys.stderr)
-        # if input("将执行 `git submodule update --init --recursive`，按回车继续，输入 N 跳过... ").upper() != "N":
-        #     run_command("git submodule update --init --recursive")
-        # else:
-        #     print("跳过子模块初始化。", file=sys.stderr)
-
-        # print("尝试进入子模块并生成数据：", file=sys.stderr)
-        # if input("将安装 Python 依赖，按回车继续，输入 N 跳过... ").upper() != "N":
-        #     run_command("python -m pip install pypinyin requests tqdm")
-        # else:
-        #     print("跳过依赖安装。", file=sys.stderr)
-
-        # if input("将进入 OIerDb-data-generator 并执行 `python main.py`，按回车继续，输入 N 跳过... ").upper() != "N":
-        #     try:
-        #         os.chdir("OIerDb-data-generator")
-        #         run_command("python main.py")
-        #         os.chdir("..")
-        #     except FileNotFoundError:
-        #         print("无法找到 OIerDb-data-generator 子模块，请检查子模块是否正确初始化。", file=sys.stderr)
-        # else:
-        #     print("跳过数据生成。", file=sys.stderr)
-
-        print("请确认数据文件已生成，然后重新运行本程序。")
+        print(
+            "Data files not found. "
+            "Please ensure that the OIerDb-data-generator submodule has generated the necessary data files."
+        )
         exit(1)
     else:
-        data.compare_contests(contest_a, contest_b)
+        data.compare_contests(
+            args.contest_a,
+            args.contest_b,
+            save_to_png=args.save if args.save else False,
+            show_plot=not args.no_show,
+        )
 
 
 if __name__ == "__main__":
