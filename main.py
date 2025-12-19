@@ -94,7 +94,14 @@ class Data:
         ry = Data.discrete_average_rank(y)
         return Data.calc_pearson(rx, ry)
 
-    def compare_contests(self, contest_a: str, contest_b: str, *, save_to_png: bool = False) -> None:
+    def compare_contests(
+        self,
+        contest_a: str,
+        contest_b: str,
+        *,
+        save_to_png: str | bool = False,
+        show_plot: bool = True,
+    ) -> None:
         contest_a_oiers = self.get_oiers_by_contest(contest_a)
         contest_b_oiers = self.get_oiers_by_contest(contest_b)
         target_oiers = contest_a_oiers & contest_b_oiers
@@ -124,9 +131,15 @@ class Data:
 
         plt.figtext(0.14, 0.86, f"Pearson   相关系数: {pearson_corr:.4f}", fontsize=12)
         plt.figtext(0.14, 0.84, f"Spearman  相关系数: {spearman_corr:.4f}", fontsize=12)
+
         if save_to_png:
-            plt.savefig(f"{contest_a}_vs_{contest_b}.png")
-        plt.show()
+            if isinstance(save_to_png, str):
+                filename = str(save_to_png)
+            else:
+                filename = f"{contest_a}_vs_{contest_b}.png"
+            plt.savefig(filename)
+        if show_plot:
+            plt.show()
 
 
 def main() -> None:
