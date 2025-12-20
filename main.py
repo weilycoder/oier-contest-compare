@@ -254,3 +254,6 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         print("\nProgram terminated by user.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}", flush=True)
+        exit(1)
