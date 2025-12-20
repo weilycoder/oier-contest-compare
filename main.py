@@ -7,6 +7,8 @@ from typing import cast, Any, Literal
 import numpy as np
 import matplotlib.pyplot as plt
 
+from utils import provinces
+
 
 plt.rcParams["font.family"] = "SimHei"
 
@@ -15,7 +17,7 @@ class OIer:
     name: str
     gender: Literal[-1, 0, 1]
     enroll_middle: int
-    records: dict[str, tuple[float, int]]
+    records: dict[str, tuple[float, int, str]]  # contest_name -> (score, rank, province)
 
     def __init__(self, data: list[str], contests: list[dict]) -> None:
         # self.oierid = int(data[0])
@@ -32,8 +34,9 @@ class OIer:
             contest_id = int(contest[0])
             score = float(contest[2]) if contest[2] != "" else float("nan")
             rank = int(contest[3]) if contest[3] != "" else -1
+            province = provinces[int(contest[4])]
             contest_name = contests[contest_id]["name"]
-            self.records[contest_name] = (score, rank)
+            self.records[contest_name] = (score, rank, province)
 
     def participated(self, contest_name: str) -> bool:
         return contest_name in self.records
@@ -51,8 +54,12 @@ class Data:
             for row in reader:
                 self.oier_table.append(OIer(row, contests))
 
-    def get_oiers_by_contest(self, contest_name: str) -> set[int]:
-        return {i for i, oier in enumerate(self.oier_table) if oier.participated(contest_name)}
+    def get_oiers_by_contest(self, contest_name: str, provenance: set[str] | None = None) -> set[int]:
+        return {
+            i
+            for i, oier in enumerate(self.oier_table)
+            if oier.participated(contest_name) and (provenance is None or oier.records[contest_name][2] in provenance)
+        }
 
     @staticmethod
     def discrete_compact_rank(data: list[Any]) -> list[int]:
@@ -98,6 +105,7 @@ class Data:
         self,
         contest_a: str,
         contest_b: str,
+        provenance: set[str] | None = None,
         *,
         dpi: int = 80,
         alpha: float = 0.5,
@@ -105,21 +113,17 @@ class Data:
         export_image: str | bool = False,
         show_plot: bool = True,
     ) -> None:
-        contest_a_oiers = self.get_oiers_by_contest(contest_a)
-        contest_b_oiers = self.get_oiers_by_contest(contest_b)
+        contest_a_oiers = self.get_oiers_by_contest(contest_a, provenance)
+        contest_b_oiers = self.get_oiers_by_contest(contest_b, provenance)
         target_oiers = contest_a_oiers & contest_b_oiers
 
-        # contest_a_ranks = []
-        # contest_b_ranks = []
         contest_a_scores = []
         contest_b_scores = []
 
         for oier_index in target_oiers:
             oier = self.oier_table[oier_index]
-            score_a, rank_a = oier.records[contest_a]
-            score_b, rank_b = oier.records[contest_b]
-            # contest_a_ranks.append(rank_a)
-            # contest_b_ranks.append(rank_b)
+            score_a = oier.records[contest_a][0]
+            score_b = oier.records[contest_b][0]
             contest_a_scores.append(score_a)
             contest_b_scores.append(score_b)
 
@@ -184,6 +188,13 @@ def main() -> None:
         help="Name of contest B",
     )
     parser.add_argument(
+        "provenance",
+        type=str,
+        nargs="*",
+        default=None,
+        help="Provenance filter (e.g., provinces). If omitted, all provenances are included.",
+    )
+    parser.add_argument(
         "--dpi",
         type=int,
         default=80,
@@ -229,6 +240,7 @@ def main() -> None:
         data.compare_contests(
             args.contest_a,
             args.contest_b,
+            provenance=set(args.provenance) if args.provenance else None,
             dpi=args.dpi,
             alpha=args.alpha,
             polyfit_degree=args.degree,
