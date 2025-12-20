@@ -162,7 +162,7 @@ def main() -> None:
         if not (0.0 <= alpha <= 1.0):
             raise argparse.ArgumentTypeError(f"alpha ({alpha}) is out of 0-1 range")
         return alpha
-    
+
     def validate_polyfit(value: str) -> int:
         try:
             degree = int(value)
@@ -173,13 +173,47 @@ def main() -> None:
         return degree
 
     parser = argparse.ArgumentParser(description="Compare contest results of OIers.")
-    parser.add_argument("contest_a", type=str, help="Name of contest A")
-    parser.add_argument("contest_b", type=str, help="Name of contest B")
-    parser.add_argument("--dpi", type=int, default=80, help="DPI for the plot")
-    parser.add_argument("--alpha", type=validate_alpha, default=0.5, help="Alpha transparency for scatter points")
-    parser.add_argument("--polyfit", type=int, default=None, help="Degree of polynomial fit line to draw")
-    parser.add_argument("--save", type=str, default=None, help="Path to save the plot image")
-    parser.add_argument("--no-show", action="store_true", help="Do not display the plot")
+    parser.add_argument(
+        "contest_a",
+        type=str,
+        help="Name of contest A",
+    )
+    parser.add_argument(
+        "contest_b",
+        type=str,
+        help="Name of contest B",
+    )
+    parser.add_argument(
+        "--dpi",
+        type=int,
+        default=80,
+        help="DPI for the plot",
+    )
+    parser.add_argument(
+        "--alpha",
+        type=validate_alpha,
+        default=0.5,
+        help="Alpha transparency for scatter points",
+    )
+    parser.add_argument(
+        "--polyfit",
+        dest="degree",
+        type=int,
+        default=None,
+        help="Degree of polynomial fit line to draw",
+    )
+    parser.add_argument(
+        "--save",
+        dest="filename",
+        type=str,
+        default=None,
+        help="Path to save the plot image",
+    )
+    parser.add_argument(
+        "--no-show",
+        action="store_true",
+        help="Do not display the plot",
+    )
 
     args = parser.parse_args()
 
@@ -197,8 +231,8 @@ def main() -> None:
             args.contest_b,
             dpi=args.dpi,
             alpha=args.alpha,
-            polyfit_degree=args.polyfit,
-            export_image=args.save if args.save else False,
+            polyfit_degree=args.degree,
+            export_image=args.filename if args.filename else False,
             show_plot=not args.no_show,
         )
 
