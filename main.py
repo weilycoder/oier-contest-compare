@@ -209,7 +209,7 @@ def main() -> None:
     parser.add_argument(
         "--polyfit",
         dest="degree",
-        type=int,
+        type=validate_polyfit,
         default=None,
         help="Degree of polynomial fit line to draw",
     )
