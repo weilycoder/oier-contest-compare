@@ -1,5 +1,4 @@
 from data import Data
-from comparison import compare_contests
 
 
 def main() -> None:
@@ -84,8 +83,7 @@ def main() -> None:
         )
         exit(1)
     else:
-        compare_contests(
-            data,
+        data.compare_contests(
             args.contest_a,
             args.contest_b,
             provenance=set(args.provenance) if args.provenance else None,
