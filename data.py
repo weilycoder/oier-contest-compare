@@ -48,12 +48,53 @@ class Data:
             for row in reader:
                 self.oier_table.append(OIer(row, contests))
 
-    def get_oiers_by_contest(self, contest_name: str, provenance: set[str] | None = None) -> set[int]:
+    def get_oiers_by_contest(
+        self,
+        contest_name: str,
+        provenance: set[str] | None = None,
+    ) -> set[int]:
+        return self.filter_oiers_by_contest(contest_name, provenance)
+
+    def filter_oiers_by_contest(
+        self,
+        contest_name: str,
+        provenance: set[str] | None = None,
+        oiers: set[int] | None = None,
+    ) -> set[int]:
         return {
             i
-            for i, oier in enumerate(self.oier_table)
-            if oier.participated(contest_name) and (provenance is None or oier.records[contest_name][2] in provenance)
+            for i in (range(len(self.oier_table)) if oiers is None else oiers)
+            if self.oier_table[i].participated(contest_name)
+            and (provenance is None or self.oier_table[i].records[contest_name][2] in provenance)
         }
+
+    def filter_oiers_by_provenance(
+        self,
+        provenance: set[str],
+        oiers: set[int] | None = None,
+    ) -> set[int]:
+        return {
+            i
+            for i in (range(len(self.oier_table)) if oiers is None else oiers)
+            if any(self.oier_table[i].records[cname][2] in provenance for cname in self.oier_table[i].records)
+        }
+
+    def filter_oiers_by_name(
+        self,
+        name: str,
+        oiers: set[int] | None = None,
+    ) -> set[int]:
+        return {i for i in (range(len(self.oier_table)) if oiers is None else oiers) if name == self.oier_table[i].name}
+
+    def find_oiers(
+        self,
+        name: str,
+        provenance: set[str] | None = None,
+    ) -> list[OIer]:
+        oiers = self.filter_oiers_by_name(name)
+        if provenance is not None:
+            oiers = self.filter_oiers_by_provenance(provenance, oiers)
+        return [self.oier_table[i] for i in oiers]
 
     def compare_contests(
         self,
