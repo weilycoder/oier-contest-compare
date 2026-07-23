@@ -60,6 +60,14 @@ options:
 
 由于 png 文件较大，故选择 svg 格式展示，并在本地进行了优化处理。
 
+注意运行脚本前需要下载用于压缩的 Python 库：
+
+```bash
+pip install scour
+```
+
++ 在重构一次项目文件后，发现 svg 文件产生差异，目前未知原因，可能是相关依赖更新导致的。
+
 ### CSP2023 vs NOIP2023 (alpha=0.2)
 
 ![CSP2023 vs NOIP2023](samples/CSP2023提高_vs_NOIP2023.svg)
