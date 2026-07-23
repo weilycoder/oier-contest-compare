@@ -60,7 +60,7 @@ options:
 
 由于 png 文件较大，故选择 svg 格式展示，并在本地进行了优化处理。
 
-注意运行脚本前需要下载用于压缩的 Python 库：
+注意运行脚本前需要下载用于压缩的 Python 库（该脚本依赖不计划写入 `pyproject.toml`）：
 
 ```bash
 pip install scour
